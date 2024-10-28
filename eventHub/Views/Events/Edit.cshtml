@@ -1,0 +1,77 @@
+﻿@model eventHub.Models.Event
+
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<h1>Edit Event</h1>
+
+<h4>Event</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" asp-route-id="@Model?.Id" method="post" enctype="multipart/form-data" novalidate class="form--compact">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Start" class="control-label"></label>
+                <input asp-for="Start" class="form-control" />
+                <span asp-validation-for="Start" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label"></label>
+                <input id="file-input" type="file" asp-for="Image" class="form-control" />
+                <p id="file-result"></p>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>          
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+    <script>
+        let fileInput = document.getElementById("file-input");
+        let fileResult = document.getElementById("file-result");
+        let fileSubmit = document.getElementById("file-submit");
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                const fileSize = fileInput.files.item(0).size;
+                const fileMb = fileSize / 1024 ** 2;
+                if (fileMb >= 2) {
+                    fileResult.innerHTML = "Please select a file less than 2MB.";
+                    fileSubmit.disabled = true;
+                } else {
+                    fileResult.innerHTML = "Success, your file is " + fileMb.toFixed(1) + "MB.";
+                    fileSubmit.disabled = false;
+                }
+            }
+        });
+    </script>
