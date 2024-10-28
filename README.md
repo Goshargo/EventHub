@@ -1,4 +1,4 @@
-# eventHub
+# EventHub
 
 ## Twórcy
 - Jakub Miedziński (130617)
