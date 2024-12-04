@@ -1,0 +1,127 @@
+﻿@model eventHub.Models.Event
+
+@{
+    ViewData["Title"] = "Create Event";
+}
+
+<h1>Create Event</h1>
+<form>
+    <label for="select-event-preset">Select event preset:</label>
+    <select id="select-event-preset" class="form-control">
+        <option value="">-- Select preset --</option>
+        <option value="concert">Concert</option>
+        <option value="webinar">Webinar</option>
+        <option value="movie-night">Movie Night</option>
+    </select>
+</form>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post" enctype="multipart/form-data" class="form--compact">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label">Title</label>
+                <input asp-for="Title" class="form-control" id="title-field" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                <input asp-for="Description" class="form-control" id="description-field" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Start" class="control-label">Start Date and Time</label>
+                <input asp-for="Start" class="form-control" id="start-field" />
+                <span asp-validation-for="Start" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Location" class="control-label">Location</label>
+                <input asp-for="Location" class="form-control" id="location-field" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image" class="control-label">Image</label>
+                <input id="file-input" type="file" asp-for="Image" class="form-control" />
+                <p id="file-result"></p>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input id="file-submit" type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    document.getElementById("select-event-preset").addEventListener("change", function () {
+        const preset = this.value;
+
+        const presets = {
+            concert: {
+                title: "Music Concert",
+                description: "An evening filled with live music.",
+                location: "Concert Hall, Warsaw"
+            },
+            webinar: {
+                title: "Technology Webinar",
+                description: "Discussion about modern technologies online.",
+                location: "Zoom Platform"
+            },
+            "movie-night": {
+                title: "Movie Night",
+                description: "An all-night movie marathon with friends.",
+                location: "Film Club, Krakow"
+            }
+        };
+
+        const today = new Date();
+        const startDate = new Date(today);
+        startDate.setDate(today.getDate() + 7);
+        const formattedStartDate = startDate.toISOString().slice(0, 16);
+
+        if (preset in presets) {
+            document.getElementById("title-field").value = presets[preset].title;
+            document.getElementById("description-field").value = presets[preset].description;
+            document.getElementById("start-field").value = formattedStartDate;
+            document.getElementById("location-field").value = presets[preset].location;
+        } else {
+            document.getElementById("title-field").value = "";
+            document.getElementById("description-field").value = "";
+            document.getElementById("start-field").value = "";
+            document.getElementById("location-field").value = "";
+        }
+    });
+</script>
+
+
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+    <script>
+        let fileInput = document.getElementById("file-input");
+        let fileResult = document.getElementById("file-result");
+        let fileSubmit = document.getElementById("file-submit");
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                const fileSize = fileInput.files.item(0).size;
+                const fileMb = fileSize / 1024 ** 2;
+                if (fileMb >= 2) {
+                    fileResult.innerHTML = "Please select a file less than 2MB.";
+                    fileSubmit.disabled = true;
+                } else {
+                    fileResult.innerHTML = "Success, your file is " + fileMb.toFixed(1) + "MB.";
+                    fileSubmit.disabled = false;
+                }
+            }
+        });
+    </script>
