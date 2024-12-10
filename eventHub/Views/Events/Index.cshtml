@@ -1,0 +1,65 @@
+﻿@model IEnumerable<eventHub.Models.Event>
+
+@{
+    ViewData["Title"] = "Your Events";
+}
+
+<h1>Manage Your Events</h1>
+
+<p>
+    <a asp-action="Create">Create New Event</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Start)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Start)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+                <th>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </th>
+                <td>
+                    @if (item.Image != null && item.Image.Length > 0)
+                    {
+                        <img src="data:image/png;base64,@Convert.ToBase64String(item.Image)" alt="Event Image" style="max-width: 50px; max-height: 50px;" />
+                    }
+                </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

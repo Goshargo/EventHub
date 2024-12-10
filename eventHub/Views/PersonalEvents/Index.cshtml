@@ -1,0 +1,56 @@
+﻿@model List<eventHub.Models.PersonalEvent>
+
+@{
+    ViewData["Title"] = "Events You Are Interested In";
+}
+
+<style>
+    
+
+    .event-image {
+        max-width: 300px;
+        max-height: 300px;
+    }
+</style>
+
+<h2>Events Marked As Interested</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var personalEvent in Model)
+        {
+            <tr>
+                <td>@personalEvent.Event.Title</td>
+                <td>@personalEvent.Event.Description</td>
+                <td>@personalEvent.Event.Start.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@personalEvent.Event.Location</td>
+
+                <td>
+                    <form asp-action="UnmarkInterest" asp-route-eventId="@personalEvent.EventId" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="I'm not interested" class="btn btn-danger" />
+                    </form>
+                </td>
+                <td>
+                    <div class="event-image">
+                        @if (@personalEvent.Event.Image != null && @personalEvent.Event.Image.Length > 0)
+                        {
+                            var imageBase64 = Convert.ToBase64String(@personalEvent.Event.Image);
+                            var imageUrl = $"data:image/jpeg;base64,{imageBase64}";
+                            <img src="@imageUrl" alt="Event Image" class="event-image" />
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

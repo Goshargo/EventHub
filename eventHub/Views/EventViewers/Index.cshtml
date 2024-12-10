@@ -1,0 +1,99 @@
+﻿@model IEnumerable<eventHub.Models.EventViewer>
+
+@{
+    ViewData["Title"] = "Recommended Events";
+}
+
+<style>
+    .event-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .event-details {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .event-image {
+        max-width: 300px;
+        max-height: 300px;
+    }
+</style>
+
+<h1>Events That May Interest You</h1>
+<hr />
+
+<form asp-action="Search" method="get" class="mt-5">
+    <div class="form-group">
+        <label for="searchString">Search for an event:</label>
+        <input type="text" id="searchString" name="searchString" value="@ViewBag.SearchString" class="form-control" />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
+<div class="mt-3">
+    <label for="sortOrder">Sort by:</label>
+    <select id="sortOrder" name="sortOrder" class="form-control" onchange="updateSortOrder(this.value)">
+        <option value="" selected="@(ViewBag.SortOrder == null)">Select...</option>
+        <option value="asc" selected="@(ViewBag.SortOrder == "asc")">Date (Ascending)</option>
+        <option value="desc" selected="@(ViewBag.SortOrder == "desc")">Date (Descending)</option>
+    </select>
+</div>
+
+<script>
+    function updateSortOrder(sortOrder) {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (sortOrder) {
+            urlParams.set('sortOrder', sortOrder);
+        } else {
+            urlParams.delete('sortOrder');
+        }
+        window.location.search = urlParams.toString();
+    }
+</script>
+
+@if (Model.Any())
+{
+    foreach (var eventview in Model)
+    {
+        <div class="event-container">
+            <div class="event-details">
+                <h3 class="display-6">@eventview.Event.Title</h3>
+                <p class="mb-1 ms-1"><i class="fa-regular fa-calendar"></i> @eventview.Event.Start</p>
+                <p class="mb-1 ms-1"><i class="fa-solid fa-location-dot"></i> @eventview.Event.Location</p>
+                <p class="ms-1"><i class="fa-solid fa-user"></i> Event created by @eventview.Event.User</p>
+                <p class="ms-1">@eventview.Event.Description</p>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-action="Interested" asp-route-eventId="@eventview.Event.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="I'm Interested" class="btn btn-success" />
+                    </form>
+                }
+                else
+                {
+                    <p class="ms-1">Login to add the event to interested.</p>
+                }
+            </div>
+
+            <div class="event-image">
+                @if (@eventview.Event.Image != null && @eventview.Event.Image.Length > 0)
+                {
+                    var imageBase64 = Convert.ToBase64String(@eventview.Event.Image);
+                    var imageUrl = $"data:image/jpeg;base64,{imageBase64}";
+                    <img src="@imageUrl" alt="Event Image" class="event-image" />
+                }
+            </div>
+        </div>
+
+        <hr />
+    }
+}
+else
+{
+    <p>No events to display.</p>
+}
